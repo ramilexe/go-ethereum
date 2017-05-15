@@ -45,7 +45,6 @@ type Backend interface {
 
 type Pending interface {
 	Pending() (*types.Block, *state.StateDB)
-	PendingBlock() *types.Block
 }
 
 // Miner creates blocks and searches for proof-of-work values.
