@@ -40,7 +40,7 @@ import (
 // EthApiBackend implements ethapi.Backend for full nodes
 type EthApiBackend struct {
 	eth     *Ethereum
-	gpo     *gasprice.GasPriceOracle
+	gpo     *gasprice.Oracle
 	pending miner.Pending
 }
 

@@ -169,20 +169,28 @@ func New(ctx *node.ServiceContext, config *Config, pending miner.Pending) (*Ethe
 	if pending == nil {
 		eth.miner = miner.New(eth, eth.chainConfig, eth.EventMux(), eth.engine)
 		eth.miner.SetGasPrice(config.GasPrice)
-		eth.miner.SetExtra(config.ExtraData)
+		eth.miner.SetExtra(makeExtraData(config.ExtraData))
 		pending = eth.miner
 	}
 
-	gpoParams := &gasprice.GpoParams{
-		GpoMinGasPrice:          config.GpoMinGasPrice,
-		GpoMaxGasPrice:          config.GpoMaxGasPrice,
-		GpoFullBlockRatio:       config.GpoFullBlockRatio,
-		GpobaseStepDown:         config.GpobaseStepDown,
-		GpobaseStepUp:           config.GpobaseStepUp,
-		GpobaseCorrectionFactor: config.GpobaseCorrectionFactor,
+	eth.ApiBackend = &EthApiBackend{eth, nil, pending}
+	gpoParams := config.GPO
+	if gpoParams.Default == nil {
+		gpoParams.Default = config.GasPrice
 	}
-	gpo := gasprice.NewGasPriceOracle(eth.blockchain, chainDb, eth.eventMux, gpoParams)
-	eth.ApiBackend = &EthApiBackend{eth, gpo, pending}
+
+	eth.ApiBackend.gpo = gasprice.NewOracle(eth.ApiBackend, gpoParams)
+
+	// gpoParams := &gasprice.GpoParams{
+	// 	GpoMinGasPrice:          config.GpoMinGasPrice,
+	// 	GpoMaxGasPrice:          config.GpoMaxGasPrice,
+	// 	GpoFullBlockRatio:       config.GpoFullBlockRatio,
+	// 	GpobaseStepDown:         config.GpobaseStepDown,
+	// 	GpobaseStepUp:           config.GpobaseStepUp,
+	// 	GpobaseCorrectionFactor: config.GpobaseCorrectionFactor,
+	// }
+	// gpo := gasprice.NewGasPriceOracle(eth.blockchain, chainDb, eth.eventMux, gpoParams)
+	// eth.ApiBackend = &EthApiBackend{eth, gpo, pending}
 
 	return eth, nil
 }
