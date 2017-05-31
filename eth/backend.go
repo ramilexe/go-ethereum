@@ -399,7 +399,10 @@ func (s *Ethereum) Stop() error {
 		s.lesServer.Stop()
 	}
 	s.txPool.Stop()
-	s.miner.Stop()
+
+	if s.miner != nil {
+		s.miner.Stop()
+	}
 	s.eventMux.Stop()
 
 	s.chainDb.Close()
