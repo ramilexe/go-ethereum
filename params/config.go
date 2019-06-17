@@ -393,6 +393,7 @@ func configNumEqual(x, y *big.Int) bool {
 	if y == nil {
 		return x == nil
 	}
+	// test
 	return x.Cmp(y) == 0
 }
 
